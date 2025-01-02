@@ -5,6 +5,8 @@ import kotlinx.coroutines.withContext
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import se.kth.trivia.data.db.TriviaDAO
+import se.kth.trivia.data.model.Categories
+import se.kth.trivia.data.model.CategoryQuestionCount
 import se.kth.trivia.data.model.Trivia
 import se.kth.trivia.data.service.TriviaService
 
@@ -44,6 +46,18 @@ class TriviaRepository(
     // Delete all trivia questions from the database
     suspend fun clearLocalTrivia() = withContext(Dispatchers.IO) {
         triviaDao.deleteAllTrivia()
+    }
+
+    suspend fun getTriviaGenres(): Categories = withContext(Dispatchers.IO) {
+        val response = api.getCategories()
+
+        return@withContext response
+    }
+
+    suspend fun getQuestionCount(category: Int): CategoryQuestionCount = withContext(Dispatchers.IO) {
+        val response = api.getQuestionCount(category)
+
+        return@withContext response
     }
 
 }

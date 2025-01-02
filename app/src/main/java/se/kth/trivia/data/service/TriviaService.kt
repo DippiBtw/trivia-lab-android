@@ -2,6 +2,8 @@ package se.kth.trivia.data.service
 
 import retrofit2.http.GET
 import retrofit2.http.Query
+import se.kth.trivia.data.model.Categories
+import se.kth.trivia.data.model.CategoryQuestionCount
 import se.kth.trivia.data.model.Trivia
 
 interface TriviaService {
@@ -14,5 +16,12 @@ interface TriviaService {
         @Query("type") type: String? = null,
     ): List<Trivia>
 
+    @GET("api_category.php")
+    suspend fun getCategories(): Categories
+
+    @GET("api_count.php")
+    suspend fun getQuestionCount(
+        @Query("category") category: Int,
+    ): CategoryQuestionCount
 
 }

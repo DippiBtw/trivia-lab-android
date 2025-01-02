@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import se.kth.trivia.data.model.Score
 
 // ViewModel class
 class HomeViewModel : ViewModel() {
@@ -33,6 +34,3 @@ class HomeViewModel : ViewModel() {
         }
     }
 }
-
-// Sample data class
-data class Score(val date: String, val points: Int)
