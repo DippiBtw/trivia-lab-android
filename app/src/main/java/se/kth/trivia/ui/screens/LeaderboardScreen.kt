@@ -72,6 +72,7 @@ fun LeaderboardScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .padding(top = it.calculateTopPadding())
             ) {
                 // Top 10 leaderboard
                 LazyColumn(
@@ -92,7 +93,6 @@ fun LeaderboardScreen(
                         .clip(MaterialTheme.shapes.small)
 
                 )
-
 
                 // Your stats at the bottom
                 YourStats(

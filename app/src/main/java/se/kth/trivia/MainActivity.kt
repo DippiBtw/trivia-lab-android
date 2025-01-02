@@ -33,29 +33,21 @@ import se.kth.trivia.ui.viewmodels.TriviaViewModel
 
 class MainActivity : ComponentActivity() {
 
-    private lateinit var auth: FirebaseAuth
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        auth = Firebase.auth
-
         enableEdgeToEdge()
         setContent {
             TriviaLabAndroidTheme {
                 val db = AppDatabase.getDatabase(applicationContext)
 
-                MainApp(db, auth)
+                MainApp(db)
             }
         }
     }
 }
 
 @Composable
-fun MainApp(db: AppDatabase, auth: FirebaseAuth) {
-    // Observe Firebase authentication state (e.g., logged in or not)
-    val user = auth.currentUser
-
+fun MainApp(db: AppDatabase) {
     val navController = rememberNavController()
 
     Scaffold(
@@ -65,8 +57,6 @@ fun MainApp(db: AppDatabase, auth: FirebaseAuth) {
             navController = navController,
             modifier = Modifier.padding(innerPadding),
             db,
-            auth,
-            user
         )
     }
 }
@@ -76,8 +66,6 @@ fun AppNavigation(
     navController: NavHostController,
     modifier: Modifier = Modifier,
     db: AppDatabase,
-    auth: FirebaseAuth,
-    user: FirebaseUser?
 ) {
 
     val triviaRepository = TriviaRepository(db.triviaDao())
@@ -89,7 +77,7 @@ fun AppNavigation(
 
     NavHost(
         navController = navController,
-        startDestination = if (user != null) "home" else "login",
+        startDestination = "login",
         modifier = modifier
     ) {
         composable(route = "login") {
