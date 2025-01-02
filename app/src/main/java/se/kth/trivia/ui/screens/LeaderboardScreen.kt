@@ -1,5 +1,6 @@
 package se.kth.trivia.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -65,11 +66,12 @@ fun LeaderboardScreen(
                 }
             )
         },
-        content = { paddingValues ->
+        content = { it ->
+            Log.d("LeaderboardScreen", it.toString())
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues)
             ) {
                 // Top 10 leaderboard
                 LazyColumn(
@@ -124,7 +126,7 @@ fun LeaderboardItem(player: Player, rank: Int) {
             .fillMaxWidth()
             .padding(vertical = 10.dp, horizontal = 16.dp)
             .background(
-                if (rank <= 3) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surface,
+                MaterialTheme.colorScheme.surface,
                 MaterialTheme.shapes.medium
             )
             .padding(16.dp)
@@ -160,7 +162,6 @@ fun YourStats(name: String, points: Int, rank: Int) {
         Text(
             "Your Stats",
             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-            color = MaterialTheme.colorScheme.onPrimary
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text("Name: $name", style = MaterialTheme.typography.bodyMedium)
