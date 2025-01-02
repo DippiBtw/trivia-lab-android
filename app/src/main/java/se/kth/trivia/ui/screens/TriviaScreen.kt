@@ -1,6 +1,5 @@
 package se.kth.trivia.ui.screens
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,13 +8,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -24,14 +21,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -39,17 +35,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import se.kth.trivia.data.model.Categories
 import se.kth.trivia.data.model.Score
 import se.kth.trivia.data.model.TriviaCategory
 import se.kth.trivia.ui.viewmodels.TriviaViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TriviaScreen(vm: TriviaViewModel, navigateHome: () -> Unit) {
+fun TriviaScreen(
+    vm: TriviaViewModel,
+    navigateHome: () -> Unit,
+    navigateToGame: (category: TriviaCategory, difficulty: String) -> Unit
+) {
 
-    val categories by vm.triviaGenres
+    val categories by vm.categories
     val loading by vm.loading
+    val options = listOf("Easy", "Normal", "Hard", "Mixed")
+    val selectedDifficulty = remember { mutableStateOf(options[0]) }
 
     Column(
         modifier = Modifier
@@ -96,7 +97,10 @@ fun TriviaScreen(vm: TriviaViewModel, navigateHome: () -> Unit) {
                         fontSize = MaterialTheme.typography.titleLarge.fontSize
                     )
 
-                    DifficultySelect()
+                    DifficultySelect(
+                        options = options,
+                        selectedDifficulty = selectedDifficulty,
+                    )
                 }
 
                 when {
@@ -121,7 +125,10 @@ fun TriviaScreen(vm: TriviaViewModel, navigateHome: () -> Unit) {
                                     // First column of categories
                                     CategoryCards(
                                         modifier = Modifier.weight(1f), // Ensure equal width for each column
-                                        categories = categories!!.trivia_categories.subList(0, half)
+                                        categories = categories!!.trivia_categories.subList(0, half),
+                                        difficulty = selectedDifficulty.value,
+                                        navigateToGame = navigateToGame
+
                                     )
                                     // Second column of categories
                                     CategoryCards(
@@ -129,7 +136,9 @@ fun TriviaScreen(vm: TriviaViewModel, navigateHome: () -> Unit) {
                                         categories = categories!!.trivia_categories.subList(
                                             half,
                                             full
-                                        )
+                                        ),
+                                        difficulty = selectedDifficulty.value,
+                                        navigateToGame = navigateToGame
                                     )
                                 }
                             }
@@ -144,12 +153,7 @@ fun TriviaScreen(vm: TriviaViewModel, navigateHome: () -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DifficultySelect(modifier: Modifier = Modifier) {
-    // List of difficulty options
-    val options = listOf("Easy", "Normal", "Hard", "Mixed")
-
-    // State to hold the selected difficulty and dropdown expanded state
-    val selectedDifficulty = remember { mutableStateOf(options[0]) }
+fun DifficultySelect(modifier: Modifier = Modifier, options: List<String>, selectedDifficulty: MutableState<String>) {
     val expanded = remember { mutableStateOf(false) }
 
     Column(
@@ -191,7 +195,12 @@ fun DifficultySelect(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun CategoryCards(modifier: Modifier, categories: List<TriviaCategory>) {
+fun CategoryCards(
+    modifier: Modifier,
+    categories: List<TriviaCategory>,
+    difficulty: String = "easy",
+    navigateToGame: (category: TriviaCategory, difficulty: String) -> Unit
+) {
     Column(
         modifier = modifier
             .padding(vertical = 8.dp) // Add padding around the entire column
@@ -204,7 +213,10 @@ fun CategoryCards(modifier: Modifier, categories: List<TriviaCategory>) {
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surface
                 ),
-                shape = RoundedCornerShape(8.dp)
+                shape = RoundedCornerShape(8.dp),
+                onClick = {
+                    navigateToGame(category, difficulty)
+                }
             ) {
                 Row(
                     modifier = Modifier

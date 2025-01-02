@@ -1,9 +1,28 @@
 package se.kth.trivia.ui.screens
 
 import android.app.GameState
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import se.kth.trivia.ui.viewmodels.GameViewModel
 
 @Composable
-fun GameScreen() {
+fun GameScreen(vm: GameViewModel) {
+
+    val category = vm.category
+    val difficulty = vm.difficulty
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        Text(category!!.name)
+        Text(difficulty!!)
+    }
 
 }

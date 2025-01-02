@@ -15,10 +15,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import se.kth.trivia.data.db.AppDatabase
 import se.kth.trivia.data.repository.TriviaRepository
+import se.kth.trivia.ui.screens.GameScreen
 import se.kth.trivia.ui.screens.HomeScreen
 import se.kth.trivia.ui.screens.LeaderboardScreen
 import se.kth.trivia.ui.screens.TriviaScreen
 import se.kth.trivia.ui.theme.TriviaLabAndroidTheme
+import se.kth.trivia.ui.viewmodels.GameViewModel
 import se.kth.trivia.ui.viewmodels.HomeViewModel
 import se.kth.trivia.ui.viewmodels.TriviaViewModel
 
@@ -63,6 +65,7 @@ fun AppNavigation(
 
     val homeViewModel = HomeViewModel()
     val triviaViewModel = TriviaViewModel(triviaRepository)
+    val gameViewModel = GameViewModel(triviaRepository)
 
     NavHost(
         navController = navController,
@@ -79,7 +82,11 @@ fun AppNavigation(
         composable(route = "trivia") {
             TriviaScreen(
                 triviaViewModel,
-                navigateHome = { navController.navigate("home") }
+                navigateHome = { navController.navigate("home") },
+                navigateToGame = { category, difficulty ->
+                    gameViewModel.startGame(category, difficulty)
+                    navController.navigate("game")
+                }
             )
         }
         composable(route = "leaderboard") {
@@ -87,6 +94,8 @@ fun AppNavigation(
                 navigateHome = { navController.navigate("home") }
             )
         }
-
+        composable(route = "game") {
+            GameScreen(gameViewModel)
+        }
     }
 }
