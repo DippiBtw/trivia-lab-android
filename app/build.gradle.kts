@@ -67,6 +67,7 @@ dependencies {
     implementation(libs.androidx.runtime.livedata)
     implementation(platform(libs.google.firebase.bom))
     implementation(libs.google.firebase.analytics)
+    implementation(libs.google.firebase.auth)
 
     ksp(libs.room.compiler)
 

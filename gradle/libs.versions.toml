@@ -57,6 +57,7 @@ room-compiler = { group = "androidx.room", name = "room-compiler", version.ref =
 androidx-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "runtimeLivedata" }
 google-firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase" }
 google-firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
+google-firebase-auth = { group = "com.google.firebase", name = "firebase-auth" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
