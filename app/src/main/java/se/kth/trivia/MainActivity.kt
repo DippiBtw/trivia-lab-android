@@ -71,7 +71,7 @@ fun AppNavigation(
     val triviaRepository = TriviaRepository(db.triviaDao())
 
     val authViewModel = AuthViewModel()
-    val homeViewModel = HomeViewModel()
+    val homeViewModel = HomeViewModel(triviaRepository)
     val triviaViewModel = TriviaViewModel(triviaRepository)
     val gameViewModel = GameViewModel(triviaRepository)
 
@@ -115,8 +115,8 @@ fun AppNavigation(
             TriviaScreen(
                 triviaViewModel,
                 navigateHome = { navController.navigate("home") },
-                navigateToGame = { category, difficulty ->
-                    gameViewModel.startGame(category, difficulty)
+                navigateToGame = { category, difficulty, nrOfQuestions ->
+                    gameViewModel.startGame(category, difficulty, nrOfQuestions)
                     navController.navigate("game")
                 }
             )
@@ -127,7 +127,13 @@ fun AppNavigation(
             )
         }
         composable(route = "game") {
-            GameScreen(gameViewModel)
+            GameScreen(
+                gameViewModel,
+                navigateHome = {
+                    homeViewModel.fetchScores()
+                    navController.navigate("home")
+                }
+            )
         }
     }
 }

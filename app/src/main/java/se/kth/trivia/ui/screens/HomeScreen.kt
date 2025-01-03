@@ -17,6 +17,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import se.kth.trivia.ui.viewmodels.AuthState
 import se.kth.trivia.ui.viewmodels.AuthViewModel
 import se.kth.trivia.ui.viewmodels.HomeViewModel
+import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun HomeScreen(
@@ -26,10 +32,12 @@ fun HomeScreen(
     navigateLeaderboard: () -> Unit,
     navigateTriviaSetup: () -> Unit
 ) {
-    val scores by vm.scores
+    val history by vm.history
     val loading by vm.loading
 
     val authState by authVm.authState.observeAsState()
+
+    val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
     LaunchedEffect(authState) {
         when (authState) {
@@ -59,12 +67,12 @@ fun HomeScreen(
         if (loading) {
             CircularProgressIndicator()
         } else {
-            if (scores.isEmpty()) {
+            if (history.isEmpty()) {
                 Text(
                     "No scores yet. Get started by playing!",
                     fontSize = 16.sp,
                     color = Color.Gray,
-                    modifier = Modifier.padding(bottom = 16.dp)
+                    modifier = Modifier.padding(bottom = 16.dp).weight(1f)
                 )
             } else {
                 LazyColumn(
@@ -72,7 +80,7 @@ fun HomeScreen(
                         .weight(1f)
                         .padding(vertical = 8.dp)
                 ) {
-                    items(scores) { score ->
+                    items(history) { trivia ->
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -88,12 +96,12 @@ fun HomeScreen(
                             ) {
                                 Column(modifier = Modifier.weight(1f)) {
                                     Text(
-                                        text = score.date,
+                                        text = formatter.format(Date(trivia.timestamp)),
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 18.sp
                                     )
                                     Text(
-                                        text = "${score.points} points",
+                                        text = "${trivia.score} points",
                                         color = MaterialTheme.colorScheme.secondary
                                     )
                                 }

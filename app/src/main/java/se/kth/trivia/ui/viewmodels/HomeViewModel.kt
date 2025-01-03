@@ -1,5 +1,6 @@
 package se.kth.trivia.ui.viewmodels
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -7,11 +8,15 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import se.kth.trivia.data.model.Score
+import se.kth.trivia.data.model.Trivia
+import se.kth.trivia.data.repository.TriviaRepository
 
 // ViewModel class
-class HomeViewModel : ViewModel() {
-    private val _scores = mutableStateOf(listOf<Score>())
-    val scores: State<List<Score>> = _scores
+class HomeViewModel(
+    private val triviaRepository: TriviaRepository
+) : ViewModel() {
+    private val _history = mutableStateOf(listOf<Trivia>())
+    val history: State<List<Trivia>> = _history
 
     private val _loading = mutableStateOf(true)
     val loading: State<Boolean> = _loading
@@ -20,16 +25,16 @@ class HomeViewModel : ViewModel() {
         fetchScores()
     }
 
-    private fun fetchScores() {
+    fun fetchScores() {
         // Simulate Firebase fetch
         viewModelScope.launch {
             _loading.value = true
             delay(500)  // Simulate network delay
-            _scores.value = listOf(
-                Score("2025-01-01", 150),
-                Score("2025-01-02", 200),
-                Score("2025-01-03", 250)
-            )
+            try {
+                _history.value = triviaRepository.getCompletedTrivia()
+            } catch (e: Exception) {
+                Log.d("HomeViewModel", "Error fetching scores: ${e.message}")
+            }
             _loading.value = false
         }
     }

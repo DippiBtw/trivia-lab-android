@@ -14,7 +14,7 @@ interface TriviaService {
         @Query("category") category: Int? = null,
         @Query("difficulty") difficulty: String? = null,
         @Query("type") type: String? = null,
-    ): List<Trivia>
+    ): Trivia
 
     @GET("api_category.php")
     suspend fun getCategories(): Categories

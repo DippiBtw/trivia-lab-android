@@ -44,13 +44,16 @@ import se.kth.trivia.ui.viewmodels.TriviaViewModel
 fun TriviaScreen(
     vm: TriviaViewModel,
     navigateHome: () -> Unit,
-    navigateToGame: (category: TriviaCategory, difficulty: String) -> Unit
+    navigateToGame: (category: TriviaCategory, difficulty: String, nrOfQuestions: String) -> Unit
 ) {
 
     val categories by vm.categories
     val loading by vm.loading
-    val options = listOf("Easy", "Normal", "Hard", "Mixed")
-    val selectedDifficulty = remember { mutableStateOf(options[0]) }
+    val difficulties = listOf("Easy", "Medium", "Hard", "Mixed")
+    val selectedDifficulty = remember { mutableStateOf(difficulties[0]) }
+
+    val nrOfQuestions = listOf("5", "10", "15", "20")
+    val selectedNrOfQuestions = remember { mutableStateOf(nrOfQuestions[0]) }
 
     Column(
         modifier = Modifier
@@ -86,20 +89,29 @@ fun TriviaScreen(
                     Score("2025-01-01", 150)
                 )
 
+
+                Text(
+                    text = "Let's Play",
+                    modifier = Modifier
+                        .padding(16.dp),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = MaterialTheme.typography.titleLarge.fontSize
+                )
+
                 Row(
                     modifier = Modifier.padding(vertical = 16.dp)
                 ) {
-                    Text(
-                        text = "Let's Play",
-                        modifier = Modifier
-                            .padding(16.dp),
-                        fontWeight = FontWeight.Bold,
-                        fontSize = MaterialTheme.typography.titleLarge.fontSize
+                    Select(
+                        title = "Difficulty",
+                        modifier = Modifier.weight(1f),
+                        options = difficulties,
+                        selected = selectedDifficulty,
                     )
-
-                    DifficultySelect(
-                        options = options,
-                        selectedDifficulty = selectedDifficulty,
+                    Select(
+                        title = "Questions",
+                        modifier = Modifier.weight(1f),
+                        options = nrOfQuestions,
+                        selected = selectedNrOfQuestions,
                     )
                 }
 
@@ -125,8 +137,12 @@ fun TriviaScreen(
                                     // First column of categories
                                     CategoryCards(
                                         modifier = Modifier.weight(1f), // Ensure equal width for each column
-                                        categories = categories!!.trivia_categories.subList(0, half),
+                                        categories = categories!!.trivia_categories.subList(
+                                            0,
+                                            half
+                                        ),
                                         difficulty = selectedDifficulty.value,
+                                        nrOfQuestions = selectedNrOfQuestions.value,
                                         navigateToGame = navigateToGame
 
                                     )
@@ -153,21 +169,32 @@ fun TriviaScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DifficultySelect(modifier: Modifier = Modifier, options: List<String>, selectedDifficulty: MutableState<String>) {
+fun Select(
+    title: String = "",
+    modifier: Modifier = Modifier,
+    options: List<String>,
+    selected: MutableState<String>
+) {
     val expanded = remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(start = 48.dp, end = 8.dp)
+            .padding(8.dp)
     ) {
+        Text(
+            text = title,
+            fontWeight = FontWeight.Bold,
+            fontSize = MaterialTheme.typography.titleMedium.fontSize,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
         ExposedDropdownMenuBox(
             expanded = expanded.value,
             onExpandedChange = { expanded.value = !expanded.value }
         ) {
             TextField(
                 modifier = Modifier.menuAnchor(),
-                value = selectedDifficulty.value,
+                value = selected.value,
                 onValueChange = {},
                 readOnly = true,
                 trailingIcon = {
@@ -183,7 +210,7 @@ fun DifficultySelect(modifier: Modifier = Modifier, options: List<String>, selec
                     DropdownMenuItem(
                         text = { Text(text) },
                         onClick = {
-                            selectedDifficulty.value = options[index]
+                            selected.value = options[index]
                             expanded.value = false
                         },
                         contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
@@ -199,7 +226,8 @@ fun CategoryCards(
     modifier: Modifier,
     categories: List<TriviaCategory>,
     difficulty: String = "easy",
-    navigateToGame: (category: TriviaCategory, difficulty: String) -> Unit
+    nrOfQuestions: String = "5",
+    navigateToGame: (category: TriviaCategory, difficulty: String, nrOfQuestions: String) -> Unit
 ) {
     Column(
         modifier = modifier
@@ -215,7 +243,7 @@ fun CategoryCards(
                 ),
                 shape = RoundedCornerShape(8.dp),
                 onClick = {
-                    navigateToGame(category, difficulty)
+                    navigateToGame(category, difficulty, nrOfQuestions)
                 }
             ) {
                 Row(

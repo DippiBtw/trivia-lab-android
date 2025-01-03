@@ -12,15 +12,16 @@ data class Trivia (
     var id: Int = 0,
     val response_code: Int,
     val results: List<TriviaQuestion>,
+    var score: Int,
     var timestamp: Long,
 )
 
 data class TriviaQuestion (
     val type: String,
     val difficulty: String,
-    val category: String,
-    val question: String,
-    val correct_answer: String,
+    var category: String,
+    var question: String,
+    var correct_answer: String,
     val incorrect_answers: List<String>,
     var correct: Boolean,
 )
