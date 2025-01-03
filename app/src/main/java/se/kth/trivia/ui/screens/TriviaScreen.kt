@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import se.kth.trivia.data.model.Score
 import se.kth.trivia.data.model.TriviaCategory
+import se.kth.trivia.data.repository.Player
 import se.kth.trivia.ui.viewmodels.TriviaViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,6 +50,7 @@ fun TriviaScreen(
 
     val categories by vm.categories
     val loading by vm.loading
+    val highscore by vm.highscore
     val difficulties = listOf("Easy", "Medium", "Hard", "Mixed")
     val selectedDifficulty = remember { mutableStateOf(difficulties[0]) }
 
@@ -86,7 +88,7 @@ fun TriviaScreen(
             ) {
                 ScoreCard(
                     Modifier.align(Alignment.CenterHorizontally),
-                    Score("2025-01-01", 150)
+                    highscore
                 )
 
 
@@ -265,7 +267,7 @@ fun CategoryCards(
 }
 
 @Composable
-fun ScoreCard(modifier: Modifier, score: Score) {
+fun ScoreCard(modifier: Modifier, highscore: Pair<String, Int>?) {
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -283,9 +285,9 @@ fun ScoreCard(modifier: Modifier, score: Score) {
                     .padding(8.dp)
                     .weight(1f)
             ) {
-                Text("Ranking")
+                Text("Hello,")
                 Text(
-                    text = "1",
+                    text = "${highscore?.first}",
                     color = MaterialTheme.colorScheme.secondary
                 )
             }
@@ -296,7 +298,7 @@ fun ScoreCard(modifier: Modifier, score: Score) {
             ) {
                 Text("Points")
                 Text(
-                    text = "${score.points}",
+                    text = "${highscore?.second}",
                     color = MaterialTheme.colorScheme.secondary
                 )
             }

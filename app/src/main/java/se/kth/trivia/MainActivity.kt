@@ -18,6 +18,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
 import se.kth.trivia.data.db.AppDatabase
+import se.kth.trivia.data.repository.FirestoreRepository
 import se.kth.trivia.data.repository.TriviaRepository
 import se.kth.trivia.ui.screens.GameScreen
 import se.kth.trivia.ui.screens.HomeScreen
@@ -29,6 +30,7 @@ import se.kth.trivia.ui.theme.TriviaLabAndroidTheme
 import se.kth.trivia.ui.viewmodels.AuthViewModel
 import se.kth.trivia.ui.viewmodels.GameViewModel
 import se.kth.trivia.ui.viewmodels.HomeViewModel
+import se.kth.trivia.ui.viewmodels.LeaderboardViewModel
 import se.kth.trivia.ui.viewmodels.TriviaViewModel
 
 class MainActivity : ComponentActivity() {
@@ -69,11 +71,13 @@ fun AppNavigation(
 ) {
 
     val triviaRepository = TriviaRepository(db.triviaDao())
+    val firestoreRepository = FirestoreRepository()
 
     val authViewModel = AuthViewModel()
     val homeViewModel = HomeViewModel(triviaRepository)
-    val triviaViewModel = TriviaViewModel(triviaRepository)
-    val gameViewModel = GameViewModel(triviaRepository)
+    val leaderboardViewModel = LeaderboardViewModel(firestoreRepository)
+    val triviaViewModel = TriviaViewModel(triviaRepository, firestoreRepository)
+    val gameViewModel = GameViewModel(triviaRepository, firestoreRepository)
 
     NavHost(
         navController = navController,
@@ -107,8 +111,14 @@ fun AppNavigation(
                 homeViewModel,
                 authViewModel,
                 navigateLogin = { navController.navigate("login") },
-                navigateLeaderboard = { navController.navigate("leaderboard") },
-                navigateTriviaSetup = { navController.navigate("trivia") }
+                navigateLeaderboard = {
+                    leaderboardViewModel.fetchTopUsers()
+                    navController.navigate("leaderboard")
+                },
+                navigateTriviaSetup = {
+                    triviaViewModel.fetchHighscore()
+                    navController.navigate("trivia")
+                }
             )
         }
         composable(route = "trivia") {
@@ -123,6 +133,7 @@ fun AppNavigation(
         }
         composable(route = "leaderboard") {
             LeaderboardScreen(
+                leaderboardViewModel,
                 navigateHome = { navController.navigate("home") }
             )
         }

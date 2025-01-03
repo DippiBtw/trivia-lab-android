@@ -14,14 +14,16 @@ data class Trivia (
     val results: List<TriviaQuestion>,
     var score: Int,
     var timestamp: Long,
+    var category: String,
+    var difficulty: String,
 )
 
 data class TriviaQuestion (
-    val type: String,
-    val difficulty: String,
+    var type: String,
+    var difficulty: String,
     var category: String,
     var question: String,
     var correct_answer: String,
-    val incorrect_answers: List<String>,
+    var incorrect_answers: List<String>,
     var correct: Boolean,
 )

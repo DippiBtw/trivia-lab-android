@@ -38,6 +38,7 @@ fun SignUpScreen(
     vm: AuthViewModel
 ) {
     var email by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
     val authState by vm.authState.observeAsState()
@@ -86,6 +87,16 @@ fun SignUpScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        // Username TextField
+        TextField(
+            value = username,
+            onValueChange = { username = it },
+            label = { Text("Username") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
         // Password TextField
         TextField(
             value = password,
@@ -99,7 +110,7 @@ fun SignUpScreen(
 
         // Login Button
         Button(
-            onClick = { vm.signup(email, password) },
+            onClick = { vm.signup(email, username, password) },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Sign up")

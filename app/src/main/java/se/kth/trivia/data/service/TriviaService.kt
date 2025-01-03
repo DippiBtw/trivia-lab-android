@@ -14,6 +14,7 @@ interface TriviaService {
         @Query("category") category: Int? = null,
         @Query("difficulty") difficulty: String? = null,
         @Query("type") type: String? = null,
+        @Query("encode") encode: String = "base64"
     ): Trivia
 
     @GET("api_category.php")

@@ -72,7 +72,9 @@ fun HomeScreen(
                     "No scores yet. Get started by playing!",
                     fontSize = 16.sp,
                     color = Color.Gray,
-                    modifier = Modifier.padding(bottom = 16.dp).weight(1f)
+                    modifier = Modifier
+                        .padding(bottom = 16.dp)
+                        .weight(1f)
                 )
             } else {
                 LazyColumn(
@@ -99,6 +101,10 @@ fun HomeScreen(
                                         text = formatter.format(Date(trivia.timestamp)),
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 18.sp
+                                    )
+                                    Text(
+                                        text = "${trivia.category} - ${trivia.difficulty}",
+                                        color = MaterialTheme.colorScheme.secondary
                                     )
                                     Text(
                                         text = "${trivia.score} points",

@@ -1,7 +1,6 @@
 package se.kth.trivia.data.repository
 
 import android.util.Log
-import androidx.core.text.HtmlCompat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.Retrofit
@@ -11,7 +10,7 @@ import se.kth.trivia.data.model.Categories
 import se.kth.trivia.data.model.CategoryQuestionCount
 import se.kth.trivia.data.model.Trivia
 import se.kth.trivia.data.service.TriviaService
-import java.util.Locale
+import java.util.Base64
 
 class TriviaRepository(
     private val triviaDao: TriviaDAO
@@ -30,15 +29,15 @@ class TriviaRepository(
         difficulty: String? = null,
         type: String? = null
     ): Trivia = withContext(Dispatchers.IO) {
-        // API call to get trivia
-
         val response = api.getTrivia(amount, category, difficulty?.lowercase(), type)
 
         for (result in response.results) {
-            result.category = decodeHtml(result.category)
-            result.question = decodeHtml(result.question)
-            result.incorrect_answers.map { decodeHtml(it) }
-            result.correct_answer = decodeHtml(result.correct_answer)
+            result.type = decode(result.type)
+            result.difficulty = decode(result.difficulty)
+            result.category = decode(result.category)
+            result.question = decode(result.question)
+            result.incorrect_answers = result.incorrect_answers.map { decode(it) }
+            result.correct_answer = decode(result.correct_answer)
         }
 
         return@withContext response
@@ -65,14 +64,23 @@ class TriviaRepository(
         return@withContext response
     }
 
-    suspend fun getQuestionCount(category: Int): CategoryQuestionCount = withContext(Dispatchers.IO) {
-        val response = api.getQuestionCount(category)
+    suspend fun getQuestionCount(category: Int): CategoryQuestionCount =
+        withContext(Dispatchers.IO) {
+            val response = api.getQuestionCount(category)
 
-        return@withContext response
-    }
+            return@withContext response
+        }
 
-    fun decodeHtml(encoded: String): String {
-        return HtmlCompat.fromHtml(encoded, HtmlCompat.FROM_HTML_MODE_LEGACY).toString()
+    // Decode Base64 encoded string
+    private fun decode(encoded: String): String {
+        return try {
+            val trimmedEncoded = encoded.trim()
+            val decodedBytes = Base64.getDecoder().decode(trimmedEncoded)
+            String(decodedBytes)
+        } catch (e: Exception) {
+            Log.e("TriviaRepository", "Error decoding string", e)
+            encoded // Return the original string in case of error
+        }
     }
 
 }

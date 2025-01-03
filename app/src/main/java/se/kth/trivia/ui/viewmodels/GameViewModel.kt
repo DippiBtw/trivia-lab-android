@@ -11,11 +11,13 @@ import kotlinx.coroutines.launch
 import se.kth.trivia.data.model.Trivia
 import se.kth.trivia.data.model.TriviaCategory
 import se.kth.trivia.data.model.TriviaQuestion
+import se.kth.trivia.data.repository.FirestoreRepository
 import se.kth.trivia.data.repository.TriviaRepository
 
 class GameViewModel(
-    private val triviaRepository: TriviaRepository
-): ViewModel() {
+    private val triviaRepository: TriviaRepository,
+    private val firestoreRepository: FirestoreRepository
+) : ViewModel() {
 
     private var trivia: Trivia? = null
 
@@ -36,11 +38,13 @@ class GameViewModel(
     private var difficulty: String? = null
     private var nrOfQuestions: String? = null
 
+    private var answered = false
+
     fun startGame(category: TriviaCategory, difficulty: String, nrOfQuestions: String) {
         _active.value = true
         questionIndex = 0
-        this._score.value = 0
-        this.trivia = null
+        trivia = null
+        answered = false
         this.category = category
         this.difficulty = difficulty
         this.nrOfQuestions = nrOfQuestions
@@ -48,11 +52,14 @@ class GameViewModel(
     }
 
     fun answerQuestion(answer: String?) {
+        if (answered) return
+
         viewModelScope.launch {
+            answered = true
             _question.value?.correct = answer != null && answer == _question.value?.correct_answer
 
             if (_question.value?.correct == true) {
-                _score.value += when(_question.value?.difficulty) {
+                _score.value += when (_question.value?.difficulty) {
                     "easy" -> 10
                     "medium" -> 20
                     "hard" -> 30
@@ -62,11 +69,13 @@ class GameViewModel(
 
             if (questionIndex < (trivia?.results?.size ?: 0)) {
                 _question.value = trivia?.results?.get(questionIndex++)
+                answered = false
             } else {
                 _active.value = false
                 trivia?.score = _score.value
                 trivia?.timestamp = System.currentTimeMillis()
                 triviaRepository.saveCompletedTrivia(trivia!!)
+                firestoreRepository.saveHighscore(_score.value)
             }
         }
     }
@@ -75,6 +84,7 @@ class GameViewModel(
         _loading.value = true
         viewModelScope.launch {
             try {
+                _score.value = 0
                 trivia = triviaRepository.fetchTrivia(
                     amount = nrOfQuestions?.toInt() ?: 5,
                     category = category?.id,
@@ -85,6 +95,8 @@ class GameViewModel(
                     _active.value = false
                     Log.d("GameViewModel", "Error fetching, code: ${trivia?.response_code}")
                 } else {
+                    trivia?.category = category?.name ?: ""
+                    trivia?.difficulty = difficulty ?: ""
                     _question.value = trivia?.results?.get(questionIndex++)
                 }
             } catch (e: Exception) {

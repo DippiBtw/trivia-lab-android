@@ -10,41 +10,24 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.material3.ListItemDefaults.contentColor
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-
-data class Player(val name: String, val points: Int)
+import se.kth.trivia.data.repository.Player
+import se.kth.trivia.ui.viewmodels.LeaderboardViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LeaderboardScreen(
+    vm: LeaderboardViewModel,
     navigateHome: () -> Unit,
 ) {
-    // Sample static players data (for now)
-    val players = listOf(
-        Player("Alice", 120),
-        Player("Bob", 110),
-        Player("Charlie", 90),
-        Player("David", 85),
-        Player("Eve", 80),
-        Player("Frank", 70),
-        Player("Grace", 60),
-        Player("Hank", 50),
-        Player("Ivy", 45),
-        Player("Jack", 40),
-        Player("Tom", 30),
-        Player("Jesse", 20),
-        Player("MonkeyWoman", 15)
-    )
-
-    // Your static data for now
-    val yourName = "YourName"
-    val yourPoints = 5
-    val yourRank = 52
+    val players by vm.topUsers
+    val userScore by vm.userScore
 
     Scaffold(
         topBar = {
@@ -96,9 +79,7 @@ fun LeaderboardScreen(
 
                 // Your stats at the bottom
                 YourStats(
-                    name = yourName,
-                    points = yourPoints,
-                    rank = yourRank
+                    userScore
                 )
             }
         }
@@ -106,7 +87,7 @@ fun LeaderboardScreen(
 }
 
 @Composable
-fun LeaderboardItem(player: Player, rank: Int) {
+fun LeaderboardItem(player: Pair<String, Int>, rank: Int) {
     val rankColor = when (rank) {
         1 -> Color(0xFFFFD700) // Gold for 1st
         2 -> Color(0xFFC0C0C0) // Silver for 2nd
@@ -132,7 +113,7 @@ fun LeaderboardItem(player: Player, rank: Int) {
             .padding(16.dp)
     ) {
         Text(
-            text = "$rankIcon #$rank ${player.name}",
+            text = "$rankIcon #$rank ${player.first}",
             style = MaterialTheme.typography.bodyLarge.copy(
                 fontWeight = FontWeight.Bold,
                 fontSize = if (rank <= 3) MaterialTheme.typography.bodyLarge.fontSize * (1.8f - rank * 0.2f) else MaterialTheme.typography.bodyLarge.fontSize
@@ -140,7 +121,7 @@ fun LeaderboardItem(player: Player, rank: Int) {
             modifier = Modifier.weight(1f)
         )
         Text(
-            text = "${player.points} pts",
+            text = "${player.second} pts",
             style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
             color = rankColor
         )
@@ -148,7 +129,7 @@ fun LeaderboardItem(player: Player, rank: Int) {
 }
 
 @Composable
-fun YourStats(name: String, points: Int, rank: Int) {
+fun YourStats(userScore: Pair<String, Int>?) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -164,9 +145,8 @@ fun YourStats(name: String, points: Int, rank: Int) {
             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
         )
         Spacer(modifier = Modifier.height(8.dp))
-        Text("Name: $name", style = MaterialTheme.typography.bodyMedium)
-        Text("Rank: #$rank", style = MaterialTheme.typography.bodyMedium)
-        Text("Points: $points", style = MaterialTheme.typography.bodyMedium)
+        Text("Name: ${userScore?.first}", style = MaterialTheme.typography.bodyMedium)
+        Text("Points: ${userScore?.second}", style = MaterialTheme.typography.bodyMedium)
     }
 }
 
