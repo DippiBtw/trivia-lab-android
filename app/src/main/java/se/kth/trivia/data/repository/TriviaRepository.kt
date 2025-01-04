@@ -29,7 +29,9 @@ class TriviaRepository(
         difficulty: String? = null,
         type: String? = null
     ): Trivia = withContext(Dispatchers.IO) {
-        val response = api.getTrivia(amount, category, difficulty?.lowercase(), type)
+        val apiDifficulty = if (difficulty == "Mixed") "" else difficulty?.lowercase()
+
+        val response = api.getTrivia(amount, category, apiDifficulty, type)
 
         for (result in response.results) {
             result.type = decode(result.type)
