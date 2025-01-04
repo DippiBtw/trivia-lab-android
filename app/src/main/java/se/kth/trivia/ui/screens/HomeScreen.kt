@@ -51,6 +51,7 @@ fun HomeScreen(
             .fillMaxSize()
             .padding(16.dp)
             .background(MaterialTheme.colorScheme.background),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
             modifier = Modifier
@@ -107,7 +108,15 @@ fun HomeScreen(
         }
 
         if (loading) {
-            CircularProgressIndicator()
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .align(Alignment.CenterHorizontally),
+                verticalArrangement = Arrangement.Center,
+            ) {
+                CircularProgressIndicator()
+            }
+
         } else {
             if (history.isEmpty()) {
                 Text(
