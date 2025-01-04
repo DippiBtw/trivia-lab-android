@@ -27,18 +27,20 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Color(0xFFE57373),  // Soft Red
-    secondary = Color(0xFFFCBF15),  // Lime Green
-    tertiary = Color(0xFFBA68C8),  // Light Purple
-    background = Color(0xFFFFFFFF),  // Light Background
-    surface = Color(0xFFF5F5F5),  // Surface Color
-    error = Color(0xFFD32F2F),  // Error Color
-    onPrimary = Color(0xFFFFFFFF),  // Text/Icon on Primary
-    onSecondary = Color(0xFF000000),  // Text/Icon on Secondary
-    onBackground = Color(0xFF212121),  // Text on Background
-    onSurface = Color(0xFF000000),  // Text on Surface
-    onError = Color(0xFFFFFFFF)  // Text on Error
+    primary = Color(0xFF1976D2),  // Vibrant Blue
+    secondary = Color(0xFF6D4C41),  // Warm Brown for better contrast
+    tertiary = Color(0xFF8E24AA),  // Deep Purple
+    background = Color(0xFFFFFFFF),  // Pure White Background
+    surface = Color(0xFFF5F5F5),  // Light Surface Color
+    error = Color(0xFFD32F2F),  // Error Red
+    onPrimary = Color(0xFFFFFFFF),  // White text/icons on Primary
+    onSecondary = Color(0xFFFFFFFF),  // White text/icons on Secondary for readability
+    onBackground = Color(0xFF424242),  // Dark Gray text for strong contrast on white
+    onSurface = Color(0xFF212121),  // Nearly black text for surfaces
+    onError = Color(0xFFFFFFFF)  // White text/icons on Error
 )
+
+
 
 @Composable
 fun TriviaLabAndroidTheme(
