@@ -38,6 +38,7 @@ class GameViewModel(
     private var difficulty: String? = null
     private var nrOfQuestions: Int? = null
     private var avgTime: Float = 0f
+    private var correctGuesses: Int = 0
 
     private var answered = false
 
@@ -45,6 +46,7 @@ class GameViewModel(
         _active.value = true
         questionIndex = 0
         avgTime = 0f
+        correctGuesses = 0
         trivia = null
         answered = false
         this.category = category
@@ -62,6 +64,7 @@ class GameViewModel(
             avgTime += timeLeft
 
             if (_question.value?.correct == true) {
+                correctGuesses++
                 _score.value += when (_question.value?.difficulty) {
                     "easy" -> 10
                     "medium" -> 20
@@ -78,6 +81,7 @@ class GameViewModel(
                 trivia?.score = _score.value
                 trivia?.timestamp = System.currentTimeMillis()
                 trivia?.avgAnswerTime = avgTime / nrOfQuestions!!
+                trivia?.avgAccuracy = (correctGuesses.toFloat() / nrOfQuestions!!) * 100
                 triviaRepository.saveCompletedTrivia(trivia!!)
                 firestoreRepository.saveHighscore(_score.value)
             }

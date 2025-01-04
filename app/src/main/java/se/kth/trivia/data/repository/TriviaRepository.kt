@@ -48,6 +48,7 @@ class TriviaRepository(
         triviaDao.insertTrivia(trivia)
     }
 
+
     // Get all completed trivia sessions from the local database
     suspend fun getCompletedTrivia(): List<Trivia> = withContext(Dispatchers.IO) {
         return@withContext triviaDao.getAllTrivia()
@@ -84,6 +85,10 @@ class TriviaRepository(
     // Get the overall avg question answer time on the device
     suspend fun getAvgAnswerTime() = withContext(Dispatchers.IO) {
         triviaDao.getOverallAvgTime()
+    }
+
+    suspend fun getAvgAccuracy() = withContext(Dispatchers.IO) {
+        triviaDao.getOverallAvgAccuracy()
     }
 
 

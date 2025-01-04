@@ -28,7 +28,7 @@ private val DarkColorScheme = darkColorScheme(
 
 private val LightColorScheme = lightColorScheme(
     primary = Color(0xFFE57373),  // Soft Red
-    secondary = Color(0xFFCDDC39),  // Lime Green
+    secondary = Color(0xFFFCBF15),  // Lime Green
     tertiary = Color(0xFFBA68C8),  // Light Purple
     background = Color(0xFFFFFFFF),  // Light Background
     surface = Color(0xFFF5F5F5),  // Surface Color

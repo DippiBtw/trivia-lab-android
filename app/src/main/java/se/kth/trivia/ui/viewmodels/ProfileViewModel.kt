@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import se.kth.trivia.data.repository.TriviaRepository
+import java.util.Locale
 
 class ProfileViewModel(
     private val triviaRepository: TriviaRepository
@@ -21,6 +22,9 @@ class ProfileViewModel(
     private val _avgAnswerTime = mutableStateOf("")
     val avgAnswerTime: State<String> = _avgAnswerTime
 
+    private val _avgAccuracy = mutableStateOf("")
+    val avgAccuracy: State<String> = _avgAccuracy
+
     init {
         fetchStats()
     }
@@ -29,11 +33,21 @@ class ProfileViewModel(
         fetchFavouriteCategory()
         fetchFavouriteDifficulty()
         fetchAvgAnswerTime()
+        fetchAvgAccuracy()
     }
 
     private fun fetchFavouriteCategory() {
         viewModelScope.launch {
             _favouriteCategory.value = triviaRepository.getFavouriteCategory() ?: "No History Found"
+        }
+    }
+
+    private fun fetchAvgAccuracy() {
+        viewModelScope.launch {
+            val result = triviaRepository.getAvgAccuracy()
+            _avgAccuracy.value =
+                if (result != null) String.format(Locale.getDefault(),"%.2f", result)
+                else "No History Found"
         }
     }
 

@@ -46,4 +46,9 @@ interface TriviaDAO {
     @Query("SELECT AVG(avgAnswerTime) FROM Trivia")
     suspend fun getOverallAvgTime(): Float?
 
+    // Calculate overall average accuracy
+    @Query("SELECT AVG(avgAccuracy) FROM Trivia")
+    suspend fun getOverallAvgAccuracy(): Float?
+
+
 }

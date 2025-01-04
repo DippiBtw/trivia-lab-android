@@ -17,6 +17,7 @@ data class Trivia (
     var category: String,
     var difficulty: String,
     var avgAnswerTime: Float,
+    var avgAccuracy: Float,
 )
 
 data class TriviaQuestion (
