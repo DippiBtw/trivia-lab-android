@@ -3,14 +3,12 @@ package se.kth.trivia.ui.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -26,9 +24,7 @@ fun GameScreen(vm: GameViewModel, navigateHome: () -> Unit) {
     val loading by vm.loading
     val question by vm.question.observeAsState()
     val shuffledAnswers = remember(question) {
-        question?.incorrect_answers?.plus(
-            question?.correct_answer
-        )?.shuffled() ?: emptyList()
+        question?.incorrect_answers?.plus(question!!.correct_answer)?.filterNotNull()?.shuffled() ?: emptyList()
     }
     val score by vm.score
 
@@ -63,7 +59,24 @@ fun GameScreen(vm: GameViewModel, navigateHome: () -> Unit) {
 }
 
 @Composable
-fun TriviaQuestionDisplay(question: TriviaQuestion, timeLeft: Int, shuffledAnswers: List<String?>, onAnswer: (String) -> Unit) {
+fun TriviaQuestionDisplay(
+    question: TriviaQuestion,
+    timeLeft: Int,
+    shuffledAnswers: List<String>,
+    onAnswer: (String) -> Unit
+) {
+    var selectedAnswer by remember { mutableStateOf<String?>(null) }
+    var showFeedback by remember { mutableStateOf(false) }
+
+    LaunchedEffect(selectedAnswer) {
+        if (selectedAnswer != null) {
+            showFeedback = true
+            delay(500L) // Show feedback for 0.5 seconds
+            onAnswer(selectedAnswer!!)
+            showFeedback = false
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -71,38 +84,82 @@ fun TriviaQuestionDisplay(question: TriviaQuestion, timeLeft: Int, shuffledAnswe
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        CategoryAndQuestionDisplay(
+            category = question.category,
+            questionText = question.question
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        TimerDisplay(timeLeft = timeLeft, totalTime = 15)
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        shuffledAnswers.forEach { answer ->
+            val feedbackColor = getFeedbackColor(answer, question.correct_answer, selectedAnswer, showFeedback)
+            AnswerButton(answer, feedbackColor) {
+                if (!showFeedback) {
+                    selectedAnswer = answer
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun CategoryAndQuestionDisplay(category: String, questionText: String) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxWidth()
+    ) {
         Text(
-            text = question.category,
+            text = category,
             fontSize = 20.sp,
             color = Color.Gray,
             modifier = Modifier.padding(bottom = 8.dp)
         )
         Text(
-            text = question.question,
+            text = questionText,
             fontSize = 24.sp,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(16.dp)
         )
-        Spacer(modifier = Modifier.height(16.dp))
-
-        shuffledAnswers.forEach { answer ->
-            AnswerButton(answer!!) {
-                onAnswer(answer)
-            }
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-        Text("Time Left: $timeLeft seconds", fontSize = 18.sp, color = Color.Red)
     }
 }
 
 @Composable
-fun AnswerButton(answer: String, onClick: () -> Unit) {
+fun TimerDisplay(timeLeft: Int, totalTime: Int = 15) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.size(100.dp)
+    ) {
+        val progress = timeLeft.toFloat() / totalTime.toFloat()
+
+        // Circular progress bar
+        CircularProgressIndicator(
+            progress = progress,
+            strokeWidth = 8.dp,
+            color = if (timeLeft > 5) Color.Green else Color.Red, // Changes color based on urgency
+            modifier = Modifier.fillMaxSize()
+        )
+
+        // Time Left as Text
+        Text(
+            text = "$timeLeft",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+    }
+}
+
+@Composable
+fun AnswerButton(answer: String, color: Color, onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
-            .background(Color.LightGray, shape = RoundedCornerShape(12.dp))
+            .background(color, shape = RoundedCornerShape(12.dp))
             .clickable { onClick() }
             .padding(16.dp),
         contentAlignment = Alignment.Center
@@ -110,6 +167,24 @@ fun AnswerButton(answer: String, onClick: () -> Unit) {
         Text(text = answer, fontSize = 18.sp, color = Color.Black)
     }
 }
+
+fun getFeedbackColor(
+    answer: String,
+    correctAnswer: String,
+    selectedAnswer: String?,
+    showFeedback: Boolean
+): Color {
+    return if (showFeedback) {
+        when (answer) {
+            correctAnswer -> Color.Green
+            selectedAnswer -> Color.Red
+            else -> Color.LightGray
+        }
+    } else {
+        Color.LightGray
+    }
+}
+
 
 @Composable
 fun LoadingScreen() {

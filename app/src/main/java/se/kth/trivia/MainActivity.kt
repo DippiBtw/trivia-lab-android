@@ -118,6 +118,9 @@ fun AppNavigation(
                 navigateTriviaSetup = {
                     triviaViewModel.fetchHighscore()
                     navController.navigate("trivia")
+                },
+                navigateProfilePage = {
+                    navController.navigate("yourPage")
                 }
             )
         }
