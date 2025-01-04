@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="se.kth.trivia" />
-                  <option name="mobileSdkAppId" value="1:636993347347:android:d1dafcd74f1c5b81d104e6" />
-                  <option name="projectId" value="trivia-app-63a84" />
-                  <option name="projectNumber" value="636993347347" />
+                  <option name="appId" value="PLACEHOLDER" />
+                  <option name="mobileSdkAppId" value="" />
+                  <option name="projectId" value="" />
+                  <option name="projectNumber" value="" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

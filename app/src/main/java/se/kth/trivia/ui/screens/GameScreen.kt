@@ -20,6 +20,8 @@ import se.kth.trivia.ui.viewmodels.GameViewModel
 
 @Composable
 fun GameScreen(vm: GameViewModel, navigateHome: () -> Unit) {
+    val TIME_TO_ANSWER = 15
+
     val active by vm.active.observeAsState()
     val loading by vm.loading
     val question by vm.question.observeAsState()
@@ -28,17 +30,17 @@ fun GameScreen(vm: GameViewModel, navigateHome: () -> Unit) {
     }
     val score by vm.score
 
-    var timeLeft by remember { mutableIntStateOf(15) }
+    var timeLeft by remember { mutableIntStateOf(TIME_TO_ANSWER) }
     var answered by remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = question) {
-        timeLeft = 15
+        timeLeft = TIME_TO_ANSWER
         answered = false
         while (timeLeft > 0 && !answered) {
             delay(1000L)
             timeLeft--
         }
-        vm.answerQuestion(null)
+        vm.answerQuestion(null, TIME_TO_ANSWER - timeLeft)
     }
 
     if (loading) {
@@ -50,7 +52,7 @@ fun GameScreen(vm: GameViewModel, navigateHome: () -> Unit) {
             shuffledAnswers = shuffledAnswers,
             onAnswer = { answer ->
                 answered = true
-                vm.answerQuestion(answer)
+                vm.answerQuestion(answer, TIME_TO_ANSWER - timeLeft)
             }
         )
     } else {

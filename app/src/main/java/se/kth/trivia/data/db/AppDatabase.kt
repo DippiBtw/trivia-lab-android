@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import se.kth.trivia.data.model.Trivia
 
-@Database(entities = [Trivia::class], version = 4, exportSchema = false)
+@Database(entities = [Trivia::class], version = 6, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class AppDatabase: RoomDatabase() {
 

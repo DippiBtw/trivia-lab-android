@@ -50,8 +50,6 @@ fun LeaderboardScreen(
             )
         },
         content = { it ->
-            Log.d("LeaderboardScreen", it.toString())
-
             Column(
                 modifier = Modifier
                     .fillMaxSize()

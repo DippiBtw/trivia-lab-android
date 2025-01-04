@@ -30,7 +30,7 @@ fun HomeScreen(
     navigateLogin: () -> Unit,
     navigateLeaderboard: () -> Unit,
     navigateTriviaSetup: () -> Unit,
-    navigateProfilePage: () -> Unit // Add navigation for "Your Stats"
+    navigateProfile: () -> Unit
 ) {
     val history by vm.history
     val loading by vm.loading
@@ -90,7 +90,7 @@ fun HomeScreen(
                         DropdownMenuItem(
                             text = { Text("Profile") },
                             onClick = {
-                                navigateProfilePage()
+                                navigateProfile()
                                 expanded = false
                             }
                         )
@@ -114,7 +114,7 @@ fun HomeScreen(
                     "No scores yet. Get started by playing!",
                     fontSize = 16.sp,
                     color = Color.Gray,
-                    modifier = Modifier.padding(bottom = 16.dp)
+                    modifier = Modifier.weight(1f)
                 )
             } else {
                 LazyColumn(

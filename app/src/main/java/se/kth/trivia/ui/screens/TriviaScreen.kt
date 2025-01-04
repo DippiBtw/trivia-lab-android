@@ -35,9 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import se.kth.trivia.data.model.Score
 import se.kth.trivia.data.model.TriviaCategory
-import se.kth.trivia.data.repository.Player
 import se.kth.trivia.ui.viewmodels.TriviaViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,7 +43,7 @@ import se.kth.trivia.ui.viewmodels.TriviaViewModel
 fun TriviaScreen(
     vm: TriviaViewModel,
     navigateHome: () -> Unit,
-    navigateToGame: (category: TriviaCategory, difficulty: String, nrOfQuestions: String) -> Unit
+    navigateToGame: (category: TriviaCategory, difficulty: String, nrOfQuestions: Int) -> Unit
 ) {
 
     val categories by vm.categories
@@ -54,7 +52,7 @@ fun TriviaScreen(
     val difficulties = listOf("Easy", "Medium", "Hard", "Mixed")
     val selectedDifficulty = remember { mutableStateOf(difficulties[0]) }
 
-    val nrOfQuestions = listOf("5", "10", "15", "20")
+    val nrOfQuestions = listOf(5, 10, 15, 20)
     val selectedNrOfQuestions = remember { mutableStateOf(nrOfQuestions[0]) }
 
     Column(
@@ -143,8 +141,8 @@ fun TriviaScreen(
                                             0,
                                             half
                                         ),
-                                        difficulty = selectedDifficulty.value,
-                                        nrOfQuestions = selectedNrOfQuestions.value,
+                                        difficulty = selectedDifficulty,
+                                        nrOfQuestions = selectedNrOfQuestions,
                                         navigateToGame = navigateToGame
 
                                     )
@@ -155,7 +153,8 @@ fun TriviaScreen(
                                             half,
                                             full
                                         ),
-                                        difficulty = selectedDifficulty.value,
+                                        difficulty = selectedDifficulty,
+                                        nrOfQuestions = selectedNrOfQuestions,
                                         navigateToGame = navigateToGame
                                     )
                                 }
@@ -171,11 +170,11 @@ fun TriviaScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Select(
+fun <T> Select(
     title: String = "",
     modifier: Modifier = Modifier,
-    options: List<String>,
-    selected: MutableState<String>
+    options: List<T>,
+    selected: MutableState<T>
 ) {
     val expanded = remember { mutableStateOf(false) }
 
@@ -196,7 +195,7 @@ fun Select(
         ) {
             TextField(
                 modifier = Modifier.menuAnchor(),
-                value = selected.value,
+                value = selected.value.toString(),
                 onValueChange = {},
                 readOnly = true,
                 trailingIcon = {
@@ -208,11 +207,11 @@ fun Select(
                 expanded = expanded.value,
                 onDismissRequest = { expanded.value = false }
             ) {
-                options.forEachIndexed { index, text ->
+                options.forEach { option ->
                     DropdownMenuItem(
-                        text = { Text(text) },
+                        text = { Text(option.toString()) },
                         onClick = {
-                            selected.value = options[index]
+                            selected.value = option
                             expanded.value = false
                         },
                         contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
@@ -227,9 +226,9 @@ fun Select(
 fun CategoryCards(
     modifier: Modifier,
     categories: List<TriviaCategory>,
-    difficulty: String = "easy",
-    nrOfQuestions: String = "5",
-    navigateToGame: (category: TriviaCategory, difficulty: String, nrOfQuestions: String) -> Unit
+    difficulty: MutableState<String>,
+    nrOfQuestions: MutableState<Int>,
+    navigateToGame: (category: TriviaCategory, difficulty: String, nrOfQuestions: Int) -> Unit
 ) {
     Column(
         modifier = modifier
@@ -245,7 +244,7 @@ fun CategoryCards(
                 ),
                 shape = RoundedCornerShape(8.dp),
                 onClick = {
-                    navigateToGame(category, difficulty, nrOfQuestions)
+                    navigateToGame(category, difficulty.value, nrOfQuestions.value)
                 }
             ) {
                 Row(

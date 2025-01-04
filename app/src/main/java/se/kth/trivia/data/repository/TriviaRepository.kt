@@ -71,6 +71,22 @@ class TriviaRepository(
             return@withContext response
         }
 
+    // Get the most common category played on the device
+    suspend fun getFavouriteCategory() = withContext(Dispatchers.IO) {
+        triviaDao.getMostCommonCategory()
+    }
+
+    // Get the most common difficulty played on the device
+    suspend fun getFavouriteDifficulty() = withContext(Dispatchers.IO) {
+        triviaDao.getMostCommonDifficulty()
+    }
+
+    // Get the overall avg question answer time on the device
+    suspend fun getAvgAnswerTime() = withContext(Dispatchers.IO) {
+        triviaDao.getOverallAvgTime()
+    }
+
+
     // Decode Base64 encoded string
     private fun decode(encoded: String): String {
         return try {

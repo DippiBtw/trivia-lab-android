@@ -36,13 +36,15 @@ class GameViewModel(
 
     private var category: TriviaCategory? = null
     private var difficulty: String? = null
-    private var nrOfQuestions: String? = null
+    private var nrOfQuestions: Int? = null
+    private var avgTime: Float = 0f
 
     private var answered = false
 
-    fun startGame(category: TriviaCategory, difficulty: String, nrOfQuestions: String) {
+    fun startGame(category: TriviaCategory, difficulty: String, nrOfQuestions: Int) {
         _active.value = true
         questionIndex = 0
+        avgTime = 0f
         trivia = null
         answered = false
         this.category = category
@@ -51,12 +53,13 @@ class GameViewModel(
         fetchQuestions()
     }
 
-    fun answerQuestion(answer: String?) {
+    fun answerQuestion(answer: String?, timeLeft: Int) {
         if (answered) return
 
         viewModelScope.launch {
             answered = true
             _question.value?.correct = answer != null && answer == _question.value?.correct_answer
+            avgTime += timeLeft
 
             if (_question.value?.correct == true) {
                 _score.value += when (_question.value?.difficulty) {
@@ -74,6 +77,7 @@ class GameViewModel(
                 _active.value = false
                 trivia?.score = _score.value
                 trivia?.timestamp = System.currentTimeMillis()
+                trivia?.avgAnswerTime = avgTime / nrOfQuestions!!
                 triviaRepository.saveCompletedTrivia(trivia!!)
                 firestoreRepository.saveHighscore(_score.value)
             }
@@ -86,7 +90,7 @@ class GameViewModel(
             try {
                 _score.value = 0
                 trivia = triviaRepository.fetchTrivia(
-                    amount = nrOfQuestions?.toInt() ?: 5,
+                    amount = nrOfQuestions ?: 5,
                     category = category?.id,
                     difficulty = difficulty,
                 )

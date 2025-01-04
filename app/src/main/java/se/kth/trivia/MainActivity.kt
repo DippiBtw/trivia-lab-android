@@ -13,10 +13,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.google.firebase.Firebase
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.auth
 import se.kth.trivia.data.db.AppDatabase
 import se.kth.trivia.data.repository.FirestoreRepository
 import se.kth.trivia.data.repository.TriviaRepository
@@ -24,6 +20,7 @@ import se.kth.trivia.ui.screens.GameScreen
 import se.kth.trivia.ui.screens.HomeScreen
 import se.kth.trivia.ui.screens.LeaderboardScreen
 import se.kth.trivia.ui.screens.LoginScreen
+import se.kth.trivia.ui.screens.ProfileScreen
 import se.kth.trivia.ui.screens.SignUpScreen
 import se.kth.trivia.ui.screens.TriviaScreen
 import se.kth.trivia.ui.theme.TriviaLabAndroidTheme
@@ -31,6 +28,7 @@ import se.kth.trivia.ui.viewmodels.AuthViewModel
 import se.kth.trivia.ui.viewmodels.GameViewModel
 import se.kth.trivia.ui.viewmodels.HomeViewModel
 import se.kth.trivia.ui.viewmodels.LeaderboardViewModel
+import se.kth.trivia.ui.viewmodels.ProfileViewModel
 import se.kth.trivia.ui.viewmodels.TriviaViewModel
 
 class MainActivity : ComponentActivity() {
@@ -78,6 +76,7 @@ fun AppNavigation(
     val leaderboardViewModel = LeaderboardViewModel(firestoreRepository)
     val triviaViewModel = TriviaViewModel(triviaRepository, firestoreRepository)
     val gameViewModel = GameViewModel(triviaRepository, firestoreRepository)
+    val profileViewModel = ProfileViewModel(triviaRepository)
 
     NavHost(
         navController = navController,
@@ -119,8 +118,9 @@ fun AppNavigation(
                     triviaViewModel.fetchHighscore()
                     navController.navigate("trivia")
                 },
-                navigateProfilePage = {
-                    navController.navigate("yourPage")
+                navigateProfile = {
+                    profileViewModel.fetchStats()
+                    navController.navigate("profile")
                 }
             )
         }
@@ -143,6 +143,15 @@ fun AppNavigation(
         composable(route = "game") {
             GameScreen(
                 gameViewModel,
+                navigateHome = {
+                    homeViewModel.fetchScores()
+                    navController.navigate("home")
+                }
+            )
+        }
+        composable(route = "profile") {
+            ProfileScreen(
+                vm = profileViewModel,
                 navigateHome = {
                     homeViewModel.fetchScores()
                     navController.navigate("home")

@@ -34,4 +34,16 @@ interface TriviaDAO {
     @Query("DELETE FROM Trivia")
     suspend fun deleteAllTrivia()
 
+    // Retrieve the most common category
+    @Query("SELECT category FROM Trivia GROUP BY category ORDER BY COUNT(category) DESC LIMIT 1")
+    suspend fun getMostCommonCategory(): String?
+
+    // Retrieve the most common difficulty
+    @Query("SELECT difficulty FROM Trivia GROUP BY difficulty ORDER BY COUNT(difficulty) DESC LIMIT 1")
+    suspend fun getMostCommonDifficulty(): String?
+
+    // Calculate overall average answer time
+    @Query("SELECT AVG(avgAnswerTime) FROM Trivia")
+    suspend fun getOverallAvgTime(): Float?
+
 }
