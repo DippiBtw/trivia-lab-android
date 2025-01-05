@@ -185,75 +185,88 @@ fun StatCard(title: String, value: String, stats: List<Float>? = null, max: Floa
 @Composable
 fun StatChart(
     stats: List<Float>,
-    maxValue: Float = 100f
+    maxValue: Float = 100f // Fixed maximum value for the Y-axis
 ) {
     if (stats.isEmpty()) return
-    val steps = 5
 
-    val pointsData: List<Point> = if (stats.size == 1) {
-        listOf(Point(0f, stats[0]), Point(1f, stats[0]))
-    } else {
-        listOf(
-            Point(0f, 0f),
-            Point(1f, maxValue)
-        ) +
-        stats.mapIndexed { index, stat -> Point((index + 2).toFloat(), stat) }
+    // Invisible dummy points for scaling
+    val transparentPoints = listOf(
+        Point(x = 0f, y = maxValue), // Top of the Y-axis
+        Point(x = 1f, y = 0f)       // Bottom of the Y-axis
+    )
+
+    // Shift actual points to start at x = 0
+    val actualPoints = stats.mapIndexed { index, stat ->
+        Point(x = index.toFloat(), y = stat)
     }
 
+    // Configure X-axis
     val xAxisData = AxisData.Builder()
         .axisStepSize(100.dp)
         .backgroundColor(Color.Transparent)
-        .steps(pointsData.size - 1)
-        .labelData { i -> i.toString() }
+        .steps(actualPoints.size - 1)
+        .labelData { i -> i.toString() } // Start labels from 0
         .labelAndAxisLinePadding(15.dp)
         .axisLineColor(MaterialTheme.colorScheme.onBackground)
         .axisLabelColor(MaterialTheme.colorScheme.onBackground)
         .build()
 
+    // Configure Y-axis with fixed values
     val yAxisData = AxisData.Builder()
-        .steps(steps)
+        .steps(5) // Divide Y-axis into 5 steps
         .backgroundColor(Color.Transparent)
         .labelAndAxisLinePadding(20.dp)
-        .labelData { i ->
-            val yScale = maxValue / steps
-            String.format("%.0f", i * yScale)
-        }
+        .labelData { i -> String.format("%.0f", i * (maxValue / 5)) }
         .axisLineColor(MaterialTheme.colorScheme.onBackground)
         .axisLabelColor(MaterialTheme.colorScheme.onBackground)
         .build()
 
+    // Dummy line for transparent points (only for scaling)
+    val transparentLine = Line(
+        dataPoints = transparentPoints,
+        LineStyle(
+            color = Color.Transparent, // Invisible line
+            lineType = LineType.Straight()
+        ),
+        IntersectionPoint(color = Color.Transparent), // Invisible points
+    )
+
+    // Actual data line
+    val dataLine = Line(
+        dataPoints = actualPoints,
+        LineStyle(
+            color = MaterialTheme.colorScheme.primary,
+            lineType = LineType.SmoothCurve(isDotted = false)
+        ),
+        IntersectionPoint(
+            color = MaterialTheme.colorScheme.primary,
+        ),
+        SelectionHighlightPoint(color = MaterialTheme.colorScheme.primary),
+        ShadowUnderLine(
+            alpha = 0.5f,
+            brush = Brush.verticalGradient(
+                colors = listOf(
+                    MaterialTheme.colorScheme.inversePrimary,
+                    Color.Transparent
+                )
+            )
+        ),
+        SelectionHighlightPopUp()
+    )
+
     val lineChartData = LineChartData(
         linePlotData = LinePlotData(
-            lines = listOf(
-                Line(
-                    dataPoints = pointsData,
-                    LineStyle(
-                        color = MaterialTheme.colorScheme.primary,
-                        lineType = LineType.SmoothCurve(isDotted = false)
-                    ),
-                    IntersectionPoint(color = MaterialTheme.colorScheme.primary),
-                    SelectionHighlightPoint(color = MaterialTheme.colorScheme.primary),
-                    ShadowUnderLine(
-                        alpha = 0.5f,
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                MaterialTheme.colorScheme.inversePrimary,
-                                Color.Transparent
-                            )
-                        )
-                    ),
-                    SelectionHighlightPopUp()
-                )
-            ),
+            lines = listOf(transparentLine, dataLine), // Include transparent and data lines
         ),
         backgroundColor = MaterialTheme.colorScheme.surface,
         xAxisData = xAxisData,
         yAxisData = yAxisData,
         gridLines = GridLines(
-            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.1f),
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.1f)
         )
     )
 
+    // Render LineChart
     LineChart(
         modifier = Modifier
             .fillMaxWidth()
