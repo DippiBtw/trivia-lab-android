@@ -8,14 +8,17 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import se.kth.trivia.data.model.Statistics
 import se.kth.trivia.data.model.Trivia
 import se.kth.trivia.data.model.TriviaCategory
 import se.kth.trivia.data.model.TriviaQuestion
 import se.kth.trivia.data.repository.FirestoreRepository
+import se.kth.trivia.data.repository.StatisticRepository
 import se.kth.trivia.data.repository.TriviaRepository
 
 class GameViewModel(
     private val triviaRepository: TriviaRepository,
+    private val statsRepository: StatisticRepository,
     private val firestoreRepository: FirestoreRepository
 ) : ViewModel() {
 
@@ -80,8 +83,12 @@ class GameViewModel(
                 _active.value = false
                 trivia?.score = _score.value
                 trivia?.timestamp = System.currentTimeMillis()
-                trivia?.avgAnswerTime = avgTime / nrOfQuestions!!
-                trivia?.avgAccuracy = (correctGuesses.toFloat() / nrOfQuestions!!) * 100
+                val stats = Statistics(
+                    avgAnswerTime = avgTime / nrOfQuestions!!,
+                    avgAccuracy = (correctGuesses.toFloat() / nrOfQuestions!!) * 100,
+                    timestamp = System.currentTimeMillis()
+                )
+                statsRepository.saveStatistic(stats)
                 triviaRepository.saveCompletedTrivia(trivia!!)
                 firestoreRepository.saveHighscore(_score.value)
             }

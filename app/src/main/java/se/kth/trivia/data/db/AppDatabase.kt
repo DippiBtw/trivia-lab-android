@@ -5,13 +5,15 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import se.kth.trivia.data.model.Statistics
 import se.kth.trivia.data.model.Trivia
 
-@Database(entities = [Trivia::class], version = 7, exportSchema = false)
+@Database(entities = [Trivia::class, Statistics::class], version = 8, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class AppDatabase: RoomDatabase() {
 
     abstract fun triviaDao(): TriviaDAO
+    abstract fun statsDao(): StatisticsDAO
 
     companion object {
         @Volatile

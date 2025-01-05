@@ -23,6 +23,7 @@ ksp = "2.0.21-1.0.27"
 runtimeLivedata = "1.7.6"
 google = "4.4.2"
 firebase = "33.7.0"
+chart = "v3.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -59,6 +60,8 @@ google-firebase-bom = { group = "com.google.firebase", name = "firebase-bom", ve
 google-firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
 google-firebase-auth = { group = "com.google.firebase", name = "firebase-auth" }
 google-firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore" }
+
+github-chart = { group = "com.github.PhilJay", name = "MPAndroidChart", version.ref = "chart" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

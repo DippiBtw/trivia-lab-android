@@ -15,6 +15,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import se.kth.trivia.data.db.AppDatabase
 import se.kth.trivia.data.repository.FirestoreRepository
+import se.kth.trivia.data.repository.StatisticRepository
 import se.kth.trivia.data.repository.TriviaRepository
 import se.kth.trivia.ui.screens.GameScreen
 import se.kth.trivia.ui.screens.HomeScreen
@@ -70,13 +71,14 @@ fun AppNavigation(
 
     val triviaRepository = TriviaRepository(db.triviaDao())
     val firestoreRepository = FirestoreRepository()
+    val statisticsRepository = StatisticRepository(db.statsDao())
 
     val authViewModel = AuthViewModel()
     val homeViewModel = HomeViewModel(triviaRepository)
     val leaderboardViewModel = LeaderboardViewModel(firestoreRepository)
     val triviaViewModel = TriviaViewModel(triviaRepository, firestoreRepository)
-    val gameViewModel = GameViewModel(triviaRepository, firestoreRepository)
-    val profileViewModel = ProfileViewModel(triviaRepository)
+    val gameViewModel = GameViewModel(triviaRepository, statisticsRepository, firestoreRepository)
+    val profileViewModel = ProfileViewModel(triviaRepository, statisticsRepository)
 
     NavHost(
         navController = navController,

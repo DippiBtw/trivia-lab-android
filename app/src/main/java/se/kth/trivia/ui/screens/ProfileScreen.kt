@@ -6,9 +6,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import se.kth.trivia.data.model.Statistics
 import se.kth.trivia.ui.viewmodels.ProfileViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -17,10 +19,11 @@ fun ProfileScreen(
     vm: ProfileViewModel,
     navigateHome: () -> Unit
 ) {
-    val favouriteCategory = vm.favouriteCategory.value
-    val favouriteDifficulty = vm.favouriteDifficulty.value
-    val avgAnswerTime = vm.avgAnswerTime.value
-    val avgAccuracy = vm.avgAccuracy.value
+    val favouriteCategory by vm.favouriteCategory
+    val favouriteDifficulty by vm.favouriteDifficulty
+    val avgAnswerTime by vm.avgAnswerTime
+    val avgAccuracy by vm.avgAccuracy
+    val latestStats by vm.latestStats
 
     Scaffold(
         topBar = {
@@ -61,36 +64,26 @@ fun YourStats(category: String, difficulty: String, avgAnswerTime: String, avgAc
             .fillMaxWidth()
             .padding(16.dp)
     ) {
-
         StatCard(
             title = "Favourite Category",
             value = category
         )
-
         Spacer(modifier = Modifier.height(16.dp))
-
         StatCard(
             title = "Favourite Difficulty",
             value = difficulty
         )
-
         Spacer(modifier = Modifier.height(16.dp))
-
-
         StatCard(
             title = "Overall Accuracy",
             value = if (avgAccuracy == "No History Found") avgAccuracy else "${avgAccuracy}%"
         )
 
-
-
-        Spacer(modifier = Modifier.height(16.dp))
-
         StatCard(
             title = "Average Answer Time",
             value = if(avgAnswerTime == "No History Found") avgAnswerTime else "${avgAnswerTime}s"
         )
-
+        Spacer(modifier = Modifier.height(16.dp))
 
     }
 }
@@ -128,4 +121,11 @@ fun StatCard(title: String, value: String) {
             )
         }
     }
+}
+
+@Composable
+fun StatChart(
+    stats: List<Statistics>
+) {
+
 }
