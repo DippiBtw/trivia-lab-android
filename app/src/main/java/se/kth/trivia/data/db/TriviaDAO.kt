@@ -42,13 +42,4 @@ interface TriviaDAO {
     @Query("SELECT difficulty FROM Trivia GROUP BY difficulty ORDER BY COUNT(difficulty) DESC LIMIT 1")
     suspend fun getMostCommonDifficulty(): String?
 
-    // Calculate overall average answer time
-    @Query("SELECT AVG(avgAnswerTime) FROM Trivia")
-    suspend fun getOverallAvgTime(): Float?
-
-    // Calculate overall average accuracy
-    @Query("SELECT AVG(avgAccuracy) FROM Trivia")
-    suspend fun getOverallAvgAccuracy(): Float?
-
-
 }

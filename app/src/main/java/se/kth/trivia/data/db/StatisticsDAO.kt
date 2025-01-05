@@ -1,11 +1,12 @@
 package se.kth.trivia.data.db
 
+import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import se.kth.trivia.data.model.Statistics
-import se.kth.trivia.data.model.Trivia
 
+@Dao
 interface StatisticsDAO {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
