@@ -3,7 +3,6 @@ package se.kth.trivia.data.repository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import se.kth.trivia.data.db.StatisticsDAO
-import se.kth.trivia.data.db.TriviaDAO
 import se.kth.trivia.data.model.Statistics
 
 class StatisticRepository(
@@ -16,11 +15,11 @@ class StatisticRepository(
 
     // Get the overall avg question answer time on the device
     suspend fun getAvgAnswerTime() = withContext(Dispatchers.IO) {
-        statisticsDao.getAvgTimeOfLatest100()
+        statisticsDao.getAvgTimeOfLatest50()
     }
 
     suspend fun getAvgAccuracy() = withContext(Dispatchers.IO) {
-        statisticsDao.getAvgAccuracyOfLatest100()
+        statisticsDao.getAvgAccuracyOfLatest50()
     }
 
     suspend fun getStats(samples: Int): List<Statistics> = withContext(Dispatchers.IO) {

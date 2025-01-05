@@ -22,11 +22,11 @@ interface StatisticsDAO {
         SELECT avgAnswerTime 
         FROM Statistics 
         ORDER BY timestamp DESC 
-        LIMIT 100
+        LIMIT 50
     )
 """
     )
-    suspend fun getAvgTimeOfLatest100(): Float?
+    suspend fun getAvgTimeOfLatest50(): Float?
 
     @Query(
         """
@@ -35,11 +35,11 @@ interface StatisticsDAO {
         SELECT avgAccuracy 
         FROM Statistics 
         ORDER BY timestamp DESC 
-        LIMIT 100
+        LIMIT 50
     )
 """
     )
-    suspend fun getAvgAccuracyOfLatest100(): Float?
+    suspend fun getAvgAccuracyOfLatest50(): Float?
 
 
     @Query("DELETE FROM Statistics")
@@ -55,7 +55,7 @@ interface StatisticsDAO {
     suspend fun getNrOfRows(): Int
 
     @Query("SELECT * FROM Statistics ORDER BY timestamp DESC LIMIT :limit")
-    suspend fun getStatisticsSortedByDate(limit: Int = 20): List<Statistics>
+    suspend fun getStatisticsSortedByDate(limit: Int = 50): List<Statistics>
 
 
 }
